@@ -28,6 +28,12 @@ build_cpp_distcheck() {
   make distcheck -j2
 }
 
+build_bazel() {
+  git clone https://github.com/google/bazel.git
+  cd bazel && ./compile.sh && cd ..
+  bazel/output/bazel test :protobuf_test
+}
+
 build_csharp() {
   # Just for the conformance tests. We don't currently
   # need to really build protoc, but it's simplest to keep with the

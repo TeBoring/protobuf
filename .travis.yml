@@ -10,6 +10,7 @@ os:
 script:
   - ./travis.sh $CONFIG
 env:
+  - CONFIG=bazel
   - CONFIG=cpp
   - CONFIG=cpp_distcheck
   - CONFIG=csharp
