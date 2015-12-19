@@ -153,6 +153,7 @@ nobase_include_HEADERS =                                        \
   google/protobuf/compiler/javanano/javanano_generator.h        \
   google/protobuf/compiler/objectivec/objectivec_generator.h    \
   google/protobuf/compiler/objectivec/objectivec_helpers.h      \
+  google/protobuf/compiler/php/php_generator.h                  \
   google/protobuf/compiler/python/python_generator.h            \
   google/protobuf/compiler/ruby/ruby_generator.h                \
   google/protobuf/compiler/csharp/csharp_generator.h            \
@@ -432,6 +433,7 @@ libprotoc_la_SOURCES =                                         \
   google/protobuf/compiler/objectivec/objectivec_oneof.h       \
   google/protobuf/compiler/objectivec/objectivec_primitive_field.cc \
   google/protobuf/compiler/objectivec/objectivec_primitive_field.h \
+  google/protobuf/compiler/php/php_generator.cc                \
   google/protobuf/compiler/python/python_generator.cc          \
   google/protobuf/compiler/ruby/ruby_generator.cc              \
   google/protobuf/compiler/csharp/csharp_doc_comment.cc        \
