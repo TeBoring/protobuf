@@ -2,26 +2,16 @@
 
 namespace Google\Protobuf;
 
-# $pool = new DescriptorPool();
-# var_dump($pool);
-#
-# $descriptor = new Descriptor();
-# var_dump($descriptor);
-# $descriptor->name_set('TestMessage');
-# $pool->add($descriptor);
-# $builder = new Internal\Builder();
-# $message_builder_context = new Internal\MessageBuilderContext($descriptor, $builder);
-# $pool->build();
-# $pool->search('TestMessage')
+$pool = get_generated_pool();
+$pool->new_builder()
+    ->add_message("TestMessage")
+    ->optional("optional_int32_a", "int32", 1)
+    ->optional("optional_int32_b", "int32", 2)
+    ->finalize()
+    ->finalize_to_pool();
 
-$descriptor = new Descriptor();
-$descriptor->name_set("TestMessage");
-$builder = new Internal\Builder();
-# $context = new Internal\MessageBuilderContext($descriptor, $builder);
-$builder->add_message($descriptor);
-
-$pool = new DescriptorPool();
-$builder->finalize_to_pool($pool);
-$pool->search('TestMessage')
+$test_message = new \TestMessage();
+$test_message->optional_int32_a = -42;
+var_dump($test_message->optional_int32_a);
 
 ?>

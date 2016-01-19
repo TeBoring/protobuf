@@ -2,5 +2,6 @@
 #
 # Created by configure
 
+CFLAGS='-O0 -g' \
 './configure' \
 "$@"
