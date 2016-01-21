@@ -60,7 +60,7 @@ void native_slot_check_int_range_precision(upb_fieldtype_t type, zval* val) {
 }
 
 zval* native_slot_get(upb_fieldtype_t type, /*VALUE type_class,*/
-                      const void* memory) {
+                      const void* memory TSRMLS_DC) {
   zval* retval = NULL;
   switch (type) {
     // case UPB_TYPE_FLOAT:
@@ -382,8 +382,8 @@ MessageLayout* create_layout(const upb_msgdef* msgdef) {
 //   }
 //   return type_class;
 // }
-
-void declare_properties(const upb_msgdef* msgdef, zend_class_entry* ce) {
+/*
+void declare_properties(const upb_msgdef* msgdef, zend_class_entry* ce TSRMLS_DC) {
   int nfields = upb_msgdef_numfields(msgdef);
   upb_msg_field_iter it;
   upb_msg_oneof_iter oit;
@@ -438,7 +438,7 @@ void declare_properties(const upb_msgdef* msgdef, zend_class_entry* ce) {
     }
   }
 }
-
+*/
 static void* slot_memory(MessageLayout* layout, const void* storage,
                          const upb_fielddef* field) {
   return ((uint8_t*)storage) + layout->fields[upb_fielddef_index(field)].offset;
@@ -545,7 +545,7 @@ void layout_init(MessageLayout* layout, void* storage) {
 }
 
 zval* layout_get(MessageLayout* layout, const void* storage,
-                 const upb_fielddef* field) {
+                 const upb_fielddef* field TSRMLS_DC) {
   void* memory = slot_memory(layout, storage, field);
   uint32_t* oneof_case = slot_oneof_case(layout, storage, field);
 
@@ -563,6 +563,6 @@ zval* layout_get(MessageLayout* layout, const void* storage,
   } else {
     return native_slot_get(
         upb_fielddef_type(field), /*field_type_class(field), */
-        memory);
+        memory TSRMLS_CC);
   }
 }

@@ -134,10 +134,10 @@ struct MessageLayout {
 
 void layout_init(MessageLayout* layout, void* storage);
 zval* layout_get(MessageLayout* layout, const void* storage,
-                 const upb_fielddef* field);
+                 const upb_fielddef* field TSRMLS_DC);
 MessageLayout* create_layout(const upb_msgdef* msgdef);
 zval* native_slot_get(upb_fieldtype_t type, /*VALUE type_class,*/
-                      const void* memory);
+                      const void* memory TSRMLS_DC);
 
 // -----------------------------------------------------------------------------
 // Message class creation.

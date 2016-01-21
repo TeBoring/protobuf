@@ -1,13 +1,13 @@
-protobuf.lo: /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/protobuf.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/protobuf.c -o protobuf.lo 
-def.lo: /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/def.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/def.c -o def.lo 
-message.lo: /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/message.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/message.c -o message.lo 
-storage.lo: /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/storage.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/storage.c -o storage.lo 
-upb.lo: /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/upb.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/teboring/sandbox/php/protobuf/php/ext/google/protobuf/upb.c -o upb.lo 
+protobuf.lo: /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/protobuf.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/protobuf.c -o protobuf.lo 
+def.lo: /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/def.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/def.c -o def.lo 
+message.lo: /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/message.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/message.c -o message.lo 
+storage.lo: /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/storage.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/storage.c -o storage.lo 
+upb.lo: /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/upb.c
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /usr/local/google/home/jieluo/teboring2/protobuf/php/ext/google/protobuf/upb.c -o upb.lo 
 $(phplibdir)/protobuf.la: ./protobuf.la
 	$(LIBTOOL) --mode=install cp ./protobuf.la $(phplibdir)
 
