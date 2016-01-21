@@ -67,7 +67,7 @@ zval* Message_get_property(zval* object, zval* member, int type,
   if (field == NULL) {
     return EG(uninitialized_zval_ptr);
   }
-  zval* retval = layout_get(self->descriptor->layout, Message_data(self), field);
+  zval* retval = layout_get(self->descriptor->layout, Message_data(self), field TSRMLS_CC);
   php_printf("retval#3: %p\n", retval);
   return retval;
 }
@@ -253,7 +253,7 @@ zend_object_value Message_create(zend_class_entry* ce TSRMLS_DC) {
   return return_value;
 }
 
-const zend_class_entry* build_class_from_descriptor(Descriptor* desc) {
+const zend_class_entry* build_class_from_descriptor(Descriptor* desc TSRMLS_DC) {
   if (desc->layout == NULL) {
     MessageLayout* layout = create_layout(desc->msgdef);
     desc->layout = layout;
@@ -273,7 +273,11 @@ const zend_class_entry* build_class_from_descriptor(Descriptor* desc) {
       zend_register_internal_class(&class_entry TSRMLS_CC);
 
   DEFINE_PHP_WRAPPER(Descriptor, php_desc, desc);
-  CE_STATIC_MEMBERS(registered_ce) = ALLOC(zval*);
+#ifdef ZTS
+  CG(static_members_table)[(zend_intptr_t)(registered_ce)->static_members_table] = ALLOC(zval*);
+#else
+  CE_STATIC_MEMBERS(registered_ce) = ALLOC(zval*)
+#endif
   CE_STATIC_MEMBERS(registered_ce)[0] = php_desc;
 
   if (Message_handlers == NULL) {

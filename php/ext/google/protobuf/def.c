@@ -31,7 +31,7 @@ static upb_fielddef *check_field_notfrozen(const upb_fielddef *def) {
 #define PROTOBUF_SETUP_ZEND_OBJECT_VALUE(classname, object, intern)   \
   classname *intern = ALLOC(classname);                               \
   memset(intern, 0, sizeof(classname));                               \
-  classname##_init_c_instance(intern);                                \
+  classname##_init_c_instance(intern TSRMLS_CC);                      \
   object.handle = zend_objects_store_put(                             \
       intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, \
       classname##_free, NULL TSRMLS_CC);                              \
@@ -60,7 +60,7 @@ static upb_fielddef *check_field_notfrozen(const upb_fielddef *def) {
     zend_object_value return_value;                                     \
     name *intern = (name *)emalloc(sizeof(name));                       \
     memset(intern, 0, sizeof(name));                                    \
-    name##_init_c_instance(intern);                                     \
+    name##_init_c_instance(intern TSRMLS_CC);                           \
     return_value.handle = zend_objects_store_put(                       \
         intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, \
         name##_free, NULL TSRMLS_CC);                                   \
@@ -69,7 +69,7 @@ static upb_fielddef *check_field_notfrozen(const upb_fielddef *def) {
   }
 
 #define PROTOBUF_UNWRAP_ZEND_WRAPPER(type, var, php_var) \
-  type *var = php_to_##type(php_var)
+  type *var = php_to_##type(php_var TSRMLS_CC)
 
 // -----------------------------------------------------------------------------
 // DescriptorPool
@@ -395,7 +395,7 @@ PHP_METHOD(Builder, finalize_to_pool) {
   Bucket *entry = Z_ARRVAL_BEGIN_P(self->pending_list);
   while (entry != NULL) {
     zval *def_php = *(zval **)entry->pData;
-    Descriptor* desc = php_to_Descriptor(def_php);
+    Descriptor* desc = php_to_Descriptor(def_php TSRMLS_CC);
     self->defs[i] = (upb_def *)desc->msgdef;
     validate_msgdef((const upb_msgdef *)self->defs[i]);
     Z_BUCKET_NEXT_PP(&entry);
@@ -417,8 +417,8 @@ PHP_METHOD(Builder, finalize_to_pool) {
   entry = Z_ARRVAL_BEGIN_P(self->pending_list);
   while (entry != NULL) {
     zval *def_php = *(zval **)entry->pData;
-    Descriptor* desc = php_to_Descriptor(def_php);
-    build_class_from_descriptor(desc);
+    Descriptor* desc = php_to_Descriptor(def_php TSRMLS_CC);
+    build_class_from_descriptor(desc TSRMLS_CC);
     add_def_obj(self->defs[i], *(zval **)entry->pData);
     Z_BUCKET_NEXT_PP(&entry);
     i++;
