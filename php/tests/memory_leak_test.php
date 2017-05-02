@@ -40,12 +40,6 @@ $to->mergeFromString($data);
 
 TestUtil::assertTestMessage($to);
 
-$from->setRecursive($from);
-
-$arr = new RepeatedField(GPBType::MESSAGE, TestMessage::class);
-$arr []= new TestMessage;
-$arr[0]->SetRepeatedRecursive($arr);
-
 // Test oneof fields.
 $m = new TestMessage();
 
@@ -91,8 +85,21 @@ $n = new TestMessage();
 $n->mergeFromString($data);
 assert(1 === $n->getOneofMessage()->getA());
 
-# $from = new TestMessage();
-# $to = new TestMessage();
-# TestUtil::setTestMessage($from);
-# $to->mergeFrom($from);
-# TestUtil::assertTestMessage($to);
+// Test mergeFrom
+$from = new TestMessage();
+$to = new TestMessage();
+TestUtil::setTestMessage($from);
+$to->mergeFrom($from);
+TestUtil::assertTestMessage($to);
+
+// Test Cycle
+$cycle = new TestMessage();
+$cycle->setRecursive($cycle);
+$cycle = 1;  // This makes $cycle standalone.
+assert(gc_enabled());
+gc_collect_cycles();  // php7 don't collect cycles at end even if gc is
+                      // enabled.
+
+# $arr = new RepeatedField(GPBType::MESSAGE, TestMessage::class);
+# $arr []= new TestMessage;
+# $arr[0]->SetRepeatedRecursive($arr);

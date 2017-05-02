@@ -206,6 +206,9 @@ static PHP_MSHUTDOWN_FUNCTION(protobuf) {
   PEFREE(repeated_field_handlers);
   PEFREE(repeated_field_iter_handlers);
   PEFREE(map_field_handlers);
+  PEFREE(descriptor_handlers);
+  PEFREE(descriptor_pool_handlers);
+  PEFREE(enum_descriptor_handlers);
 
   return 0;
 }

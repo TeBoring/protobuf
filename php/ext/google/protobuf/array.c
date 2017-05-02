@@ -144,9 +144,9 @@ static inline void php_proto_array_string_release(zval *value) {
 static inline void php_proto_array_object_release(zval *value) {
   void* ptr = Z_PTR_P(value);
   zend_object* object = *(zend_object**)ptr;
-  if(--GC_REFCOUNT(object) == 0) {
-    zend_objects_store_del(object);
-  }
+  zval obj;
+  ZVAL_OBJ(&obj, object);
+  zval_ptr_dtor(&obj);
   efree(ptr);
 }
 static void php_proto_array_default_release(zval* value) {

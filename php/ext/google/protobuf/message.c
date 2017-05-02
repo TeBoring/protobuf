@@ -81,6 +81,7 @@ PHP_PROTO_OBJECT_FREE_START(MessageHeader, message)
   FREE(intern->data);
 PHP_PROTO_OBJECT_FREE_END
 
+// Define object dtor method.
 PHP_PROTO_OBJECT_DTOR_START(MessageHeader, message)
 PHP_PROTO_OBJECT_DTOR_END
 

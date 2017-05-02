@@ -19,8 +19,8 @@ do
   echo ""
 done
 
-# # Make sure to run the memory test in debug mode.
-# php -dextension=../ext/google/protobuf/modules/protobuf.so memory_leak_test.php
+# Make sure to run the memory test in debug mode.
+php -dextension=../ext/google/protobuf/modules/protobuf.so memory_leak_test.php
 
 export ZEND_DONT_UNLOAD_MODULES=1
 export USE_ZEND_ALLOC=0

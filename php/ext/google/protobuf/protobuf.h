@@ -282,14 +282,14 @@ static inline int php_proto_zend_hash_get_current_data_ex(HashTable* ht,
     classname* intern =                                   \
         (classname*)((char*)object - XtOffsetOf(classname, std));
 #define PHP_PROTO_OBJECT_FREE_END           \
+    zend_object_std_dtor(object TSRMLS_CC); \
   }
 
 #define PHP_PROTO_OBJECT_DTOR_START(classname, lowername) \
   void lowername##_dtor(zend_object* object) {            \
     classname* intern =                                   \
         (classname*)((char*)object - XtOffsetOf(classname, std));
-#define PHP_PROTO_OBJECT_DTOR_END           \
-    zend_object_std_dtor(object TSRMLS_CC); \
+#define PHP_PROTO_OBJECT_DTOR_END \
   }
 
 #define PHP_PROTO_OBJECT_CREATE_START(NAME, LOWWERNAME)                     \
@@ -422,6 +422,10 @@ extern zend_class_entry* repeated_field_type;
 // -----------------------------------------------------------------------------
 // Descriptor.
 // -----------------------------------------------------------------------------
+
+extern zend_object_handlers* descriptor_handlers;
+extern zend_object_handlers* descriptor_pool_handlers;
+extern zend_object_handlers* enum_descriptor_handlers;
 
 PHP_PROTO_WRAP_OBJECT_START(DescriptorPool)
   upb_symtab* symtab;
