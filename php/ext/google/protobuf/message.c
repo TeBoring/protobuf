@@ -49,6 +49,7 @@ static  zend_function_entry message_methods[] = {
   PHP_ME(Message, readOneof, NULL, ZEND_ACC_PROTECTED)
   PHP_ME(Message, writeOneof, NULL, ZEND_ACC_PROTECTED)
   PHP_ME(Message, whichOneof, NULL, ZEND_ACC_PROTECTED)
+  PHP_ME(Message, write, NULL, ZEND_ACC_PUBLIC)
   PHP_ME(Message, __construct, NULL, ZEND_ACC_PROTECTED)
   {NULL, NULL, NULL}
 };
@@ -757,4 +758,14 @@ PHP_METHOD(Timestamp, toDateTime) {
 
   zval* datetime_ptr = &datetime;
   PHP_PROTO_RETVAL_ZVAL(datetime_ptr);
+}
+
+PHP_METHOD(Message, write) {
+  zval* member;
+  zval* value;
+  if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zz", &member,
+                            &value) == FAILURE) {
+    return;
+  }
+  message_set_property_internal(getThis(), member, value TSRMLS_CC);
 }

@@ -801,6 +801,7 @@ PHP_METHOD(Message, mergeFrom);
 PHP_METHOD(Message, readOneof);
 PHP_METHOD(Message, writeOneof);
 PHP_METHOD(Message, whichOneof);
+PHP_METHOD(Message, write);
 PHP_METHOD(Message, __construct);
 
 // -----------------------------------------------------------------------------
