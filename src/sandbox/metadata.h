@@ -1,0 +1,10 @@
+static void init_file_any();
+static void init_file_api();
+static void init_file_duration();
+static void init_file_field_mask();
+static void init_file_empty();
+static void init_file_source_context();
+static void init_file_struct();
+static void init_file_timestamp();
+static void init_file_type();
+static void init_file_wrappers();

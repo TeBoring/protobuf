@@ -1346,6 +1346,505 @@ void GenerateServiceMethodDocComment(io::Printer* printer,
     "return_type", EscapePhpdoc(FullClassName(method->output_type(), false)));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+template <typename DescriptorType>
+std::string CamelClassName(const DescriptorType* desc, bool is_descriptor) {
+  string classname = desc->name();
+  const Descriptor* containing = desc->containing_type();
+  while (containing != NULL) {
+    classname = containing->name() + '_' + classname;
+    containing = containing->containing_type();
+  }
+  classname = ClassNamePrefix(classname, desc) + classname;
+  return classname;
+}
+
+std::string ToLower(const string camel) {
+  string lower = "";
+  bool first = true;
+  for (int i = 0; i < camel.size(); i++) {
+    char c = camel[i];
+    if (::isupper(c)) {
+      if (!first && !(lower.size() > 0 && lower[lower.size() - 1] == '_')) {
+        lower += "_";
+      }
+      lower += ::tolower(c);
+    } else {
+      lower += c;
+    }
+    first = false;
+  }
+  return lower;
+}
+
+template <typename DescriptorType>
+std::string LowerClassName(const DescriptorType* desc) {
+  string camel = CamelClassName(desc, false);
+  return ToLower(camel);
+}
+
+std::string PhpPropertyType(const FieldDescriptor* field) {
+  return "long";
+}
+
+std::string GeneratedExtensionMessageFileName(const Descriptor* message,
+                                     bool is_descriptor) {
+  std::string result = FullClassName(message, is_descriptor);
+  for (int i = 0; i < result.size(); i++) {
+    if (result[i] == '\\') {
+      result[i] = '/';
+    }
+  }
+  return result + ".message.c";
+}
+
+std::string GeneratedExtensionMessageDeclarationFileName(
+    const Descriptor* message, bool is_descriptor) {
+  std::string result = FullClassName(message, is_descriptor);
+  for (int i = 0; i < result.size(); i++) {
+    if (result[i] == '\\') {
+      result[i] = '/';
+    }
+  }
+  return result + ".protobuf.h";
+}
+
+std::string GeneratedExtensionEnumFileName(const EnumDescriptor* message) {
+  std::string result = FullClassName(message, false);
+  for (int i = 0; i < result.size(); i++) {
+    if (result[i] == '\\') {
+      result[i] = '/';
+    }
+  }
+  return result + ".enum.c";
+}
+
+std::string GeneratedMetadataExtensionFileName(const std::string& proto_file) {
+  int start_index = 0;
+  int first_index = proto_file.find_first_of("/", start_index);
+  std::string result = "";
+
+  // Append directory name.
+  std::string file_no_suffix;
+  int lastindex = proto_file.find_last_of(".");
+  file_no_suffix = proto_file.substr(0, lastindex);
+
+  while (first_index != string::npos) {
+    result += UnderscoresToCamelCase(
+        file_no_suffix.substr(start_index, first_index - start_index), true);
+    result += "/";
+    start_index = first_index + 1;
+    first_index = file_no_suffix.find_first_of("/", start_index);
+  }
+
+  // Append file name.
+  result += RenameEmpty(UnderscoresToCamelCase(
+      file_no_suffix.substr(start_index, first_index - start_index), true));
+
+  return result += ".metadata.c";
+}
+
+std::string GeneratedMetadataExtensionHeaderFileName(const std::string& proto_file) {
+  int start_index = 0;
+  int first_index = proto_file.find_first_of("/", start_index);
+  std::string result = "";
+
+  // Append directory name.
+  std::string file_no_suffix;
+  int lastindex = proto_file.find_last_of(".");
+  file_no_suffix = proto_file.substr(0, lastindex);
+
+  while (first_index != string::npos) {
+    result += UnderscoresToCamelCase(
+        file_no_suffix.substr(start_index, first_index - start_index), true);
+    result += "/";
+    start_index = first_index + 1;
+    first_index = file_no_suffix.find_first_of("/", start_index);
+  }
+
+  // Append file name.
+  result += RenameEmpty(UnderscoresToCamelCase(
+      file_no_suffix.substr(start_index, first_index - start_index), true));
+
+  return result += ".metadata.h";
+}
+
+void GenerateExtensionOneofDeclaration(const OneofDescriptor* oneof,
+                                       io::Printer* printer) {
+  printer->Print(
+      "  PHP_ME(^classname^, get^camel_name^, NULL, ZEND_ACC_PUBLIC)\n",
+      "classname", CamelClassName(oneof->containing_type(), false),
+      "camel_name", UnderscoresToCamelCase(oneof->name(), true));
+}
+
+void GenerateExtensionFieldDeclaration(const FieldDescriptor* field,
+                                       io::Printer* printer) {
+  printer->Print(
+      "  PHP_ME(^classname^, get^camel_field^, NULL, ZEND_ACC_PUBLIC)\n"
+      "  PHP_ME(^classname^, set^camel_field^, NULL, ZEND_ACC_PUBLIC)\n",
+      "classname", CamelClassName(field->containing_type(), false),
+      "camel_field", UnderscoresToCamelCase(field->name(), true));
+}
+
+void GenerateExtensionOneofDeclaration2(const OneofDescriptor* oneof,
+                                        io::Printer* printer) {
+  printer->Print(
+      "  PHP_METHOD(^classname^, get^camel_name^);\n",
+      "classname", CamelClassName(oneof->containing_type(), false),
+      "camel_name", UnderscoresToCamelCase(oneof->name(), true));
+}
+
+void GenerateExtensionFieldDeclaration2(const FieldDescriptor* field,
+                                       io::Printer* printer) {
+  printer->Print(
+      "PHP_METHOD(^classname^, get^camel_field^);\n"
+      "PHP_METHOD(^classname^, set^camel_field^);\n",
+      "classname", CamelClassName(field->containing_type(), false),
+      "camel_field", UnderscoresToCamelCase(field->name(), true));
+}
+
+void GenerateExtensionOneofFieldPropertyDeclaration(
+  const OneofDescriptor* field, io::Printer* printer) {
+  printer->Print(
+      "  zend_declare_property_null(^lower_classname^_type, \"^field^\", strlen(\"^field^\"),\n"
+      "                             ZEND_ACC_PRIVATE TSRMLS_CC);\n",
+      "lower_classname", LowerClassName(field->containing_type()),
+      "field", field->name(),
+      "classname", CamelClassName(field->containing_type(), false),
+      "camel_field", UnderscoresToCamelCase(field->name(), true));
+}
+
+void GenerateExtensionFieldPropertyDeclaration(const FieldDescriptor* field,
+                                               io::Printer* printer) {
+  if (field->containing_oneof()) {
+    // Oneof fields are handled by GenerateOneofField.
+    return;
+  } else {
+    printer->Print(
+        "  zend_declare_property_null(^lower_classname^_type, \"^field^\", strlen(\"^field^\"),\n"
+        "                             ZEND_ACC_PRIVATE TSRMLS_CC);\n",
+        "lower_classname", LowerClassName(field->containing_type()),
+        "field", field->name(),
+        "classname", CamelClassName(field->containing_type(), false),
+        "camel_field", UnderscoresToCamelCase(field->name(), true));
+  }
+}
+
+void GenerateExtensionEnumFile(const FileDescriptor* file,
+                               const EnumDescriptor* message,
+                               GeneratorContext* generator_context) {
+  std::string filename =
+      GeneratedExtensionEnumFileName(message);
+  scoped_ptr<io::ZeroCopyOutputStream> output(
+      generator_context->Open(filename));
+  io::Printer printer(output.get(), '^');
+
+  // Header
+  printer.Print(
+      "// -----------------------------------------------------------------------------\n"
+      "// ^classname^\n"
+      "// -----------------------------------------------------------------------------\n\n",
+      "classname", CamelClassName(message, false));
+
+  // Field Accessor Declaration
+  printer.Print(
+      "static zend_function_entry ^lower_classname^_methods[] = {\n"
+      "  {NULL, NULL, NULL}\n"
+      "};\n\n",
+      "lower_classname", LowerClassName(message)
+      );
+
+  // Define class entry
+  printer.Print(
+      "zend_class_entry* ^lower_classname^_type;\n\n",
+      "lower_classname", LowerClassName(message)
+      );
+
+  // Init class entry
+  printer.Print(
+      "// Init class entry.\n"
+      "PHP_PROTO_INIT_ENUMCLASS_START(\"Google\\\\Protobuf\\\\^classname^\",\n"
+      "                                ^classname^, ^lower_classname^)\n",
+      "classname", CamelClassName(message, false),
+      "lower_classname", LowerClassName(message)
+      );
+
+  for (int i = 0; i < message->value_count(); i++) {
+    const EnumValueDescriptor *value = message->value(i);
+    printer.Print(
+        "  zend_declare_class_constant_long(^lower_classname^_type,\n"
+        "                                   \"^name^\", ^name_len^, ^number^ TSRMLS_CC);\n",
+        "lower_classname", LowerClassName(message),
+        "name", value->name(),
+        "name_len", IntToString(value->name().length()),
+        "number", IntToString(value->number())
+        );
+  }
+
+  printer.Print(
+      "PHP_PROTO_INIT_ENUMCLASS_END\n\n"
+      );
+}
+
+void GenerateExtensionMessageFile(const FileDescriptor* file,
+                                  const Descriptor* message, bool is_descriptor,
+                                  GeneratorContext* generator_context) {
+  // Don't generate MapEntry messages -- we use the PHP extension's native
+  // support for map fields instead.
+  if (message->options().map_entry()) {
+    return;
+  }
+
+  std::string filename =
+      GeneratedExtensionMessageFileName(message, is_descriptor);
+  scoped_ptr<io::ZeroCopyOutputStream> output(
+      generator_context->Open(filename));
+  io::Printer printer(output.get(), '^');
+
+  // Header
+  printer.Print(
+      "// -----------------------------------------------------------------------------\n"
+      "// ^classname^\n"
+      "// -----------------------------------------------------------------------------\n\n",
+      "classname", CamelClassName(message, false));
+
+  // Field Accessor Declaration
+  printer.Print(
+      "static zend_function_entry ^lower_classname^_methods[] = {\n"
+      "  PHP_ME(^classname^, __construct, NULL, ZEND_ACC_PUBLIC)\n",
+      "classname", CamelClassName(message, false),
+      "lower_classname", LowerClassName(message)
+      );
+
+  for (int i = 0; i < message->field_count(); i++) {
+    const FieldDescriptor* field = message->field(i);
+    GenerateExtensionFieldDeclaration(field, &printer);
+  }
+
+  for (int i = 0; i < message->oneof_decl_count(); i++) {
+    const OneofDescriptor* oneof = message->oneof_decl(i);
+    GenerateExtensionOneofDeclaration(oneof, &printer);
+  }
+
+  printer.Print(
+      "  {NULL, NULL, NULL}\n"
+      "};\n\n"
+      );
+
+  // Define class entry
+  printer.Print(
+      "zend_class_entry* ^lower_classname^_type;\n\n",
+      "lower_classname", LowerClassName(message)
+      );
+
+  // Init class entry
+  printer.Print(
+      "// Init class entry.\n"
+      "PHP_PROTO_INIT_SUBMSGCLASS_START(\"Google\\\\Protobuf\\\\^classname^\",\n"
+      "                                 ^classname^, ^lower_classname^)\n"
+      "  zend_class_implements(^lower_classname^_type TSRMLS_CC, 1, message_type);\n",
+      "classname", CamelClassName(message, false),
+      "lower_classname", LowerClassName(message)
+      );
+
+  for (int i = 0; i < message->field_count(); i++) {
+    const FieldDescriptor* field = message->field(i);
+    GenerateExtensionFieldPropertyDeclaration(field, &printer);
+  }
+  for (int i = 0; i < message->oneof_decl_count(); i++) {
+    const OneofDescriptor* field = message->oneof_decl(i);
+    GenerateExtensionOneofFieldPropertyDeclaration(field, &printer);
+  }
+
+  printer.Print(
+      "PHP_PROTO_INIT_SUBMSGCLASS_END\n\n"
+      );
+
+  // Define constructor
+  string containing_filename = message->file()->name();
+  int start = containing_filename.find_last_of("/") + 1;
+  int end = containing_filename.find_last_of(".");
+  printer.Print(
+      "PHP_METHOD(^classname^, __construct) {\n"
+      "  init_file_^file^();\n"
+      "  MessageHeader* intern = UNBOX(MessageHeader, getThis());\n"
+      "  custom_data_init(^lower_classname^_type, intern PHP_PROTO_TSRMLS_CC);\n"
+      "}\n\n",
+      "file", containing_filename.substr(start, end - start),
+      "classname", CamelClassName(message, false),
+      "lower_classname", LowerClassName(message)
+      );
+
+  // Define field accessors
+  for (int i = 0; i < message->field_count(); i++) {
+    const FieldDescriptor* field = message->field(i);
+    printer.Print(
+        "PHP_PROTO_FIELD_ACCESSORS(^classname^, ^lower_classname^, ^camel_field^, \"^lower_field^\")\n",
+        "classname", CamelClassName(field->containing_type(), false),
+        "lower_classname", LowerClassName(message),
+        "camel_field", UnderscoresToCamelCase(field->name(), true),
+        "lower_field", field->name());
+  }
+
+  for (int i = 0; i < message->oneof_decl_count(); i++) {
+    const OneofDescriptor* field = message->oneof_decl(i);
+    printer.Print(
+        "PHP_PROTO_ONEOF_ACCESSORS(^classname^, ^lower_classname^, ^camel_field^, \"^lower_field^\")\n",
+        "classname", CamelClassName(field->containing_type(), false),
+        "lower_classname", LowerClassName(message),
+        "camel_field", UnderscoresToCamelCase(field->name(), true),
+        "lower_field", field->name());
+  }
+
+  printer.Print("\n");
+
+  // Nested messages and enums.
+  for (int i = 0; i < message->nested_type_count(); i++) {
+    GenerateExtensionMessageFile(file, message->nested_type(i), is_descriptor,
+                        generator_context);
+  }
+  for (int i = 0; i < message->enum_type_count(); i++) {
+    GenerateExtensionEnumFile(file, message->enum_type(i), generator_context);
+  }
+}
+
+void GenerateExtensionMessageDeclarationFile(
+    const FileDescriptor* file, const Descriptor* message, bool is_descriptor,
+    GeneratorContext* generator_context) {
+  // Don't generate MapEntry messages -- we use the PHP extension's native
+  // support for map fields instead.
+  if (message->options().map_entry()) {
+    return;
+  }
+
+  std::string filename =
+      GeneratedExtensionMessageDeclarationFileName(message, is_descriptor);
+  scoped_ptr<io::ZeroCopyOutputStream> output(
+      generator_context->Open(filename));
+  io::Printer printer(output.get(), '^');
+
+  printer.Print(
+      "PHP_METHOD(^classname^, __construct);\n",
+      "classname", CamelClassName(message, false)
+      );
+
+  for (int i = 0; i < message->field_count(); i++) {
+    const FieldDescriptor* field = message->field(i);
+    GenerateExtensionFieldDeclaration2(field, &printer);
+  }
+
+  printer.Print("\n");
+}
+
+void GenerateMetadataExtensionHeaderFile(const FileDescriptor* file,
+                                   bool is_descriptor,
+                                   GeneratorContext* generator_context) {
+  std::string filename = GeneratedMetadataExtensionHeaderFileName(file->name());
+  scoped_ptr<io::ZeroCopyOutputStream> output(
+      generator_context->Open(filename));
+  io::Printer printer(output.get(), '^');
+
+  int startindex = file->name().find_last_of("/") + 1;
+  int endindex = file->name().find_last_of(".");
+
+  printer.Print(
+      "static void init_file_^lower^();\n",
+      "lower", ToLower(file->name().substr(startindex, endindex - startindex)));
+}
+
+void GenerateMetadataExtensionFile(const FileDescriptor* file,
+                                   bool is_descriptor,
+                                   GeneratorContext* generator_context) {
+  std::string filename = GeneratedMetadataExtensionFileName(file->name());
+  scoped_ptr<io::ZeroCopyOutputStream> output(
+      generator_context->Open(filename));
+  io::Printer printer(output.get(), '^');
+
+  int startindex = file->name().find_last_of("/") + 1;
+  int endindex = file->name().find_last_of(".");
+
+  printer.Print(
+      "static void init_file_^lower^() {\n",
+      "lower", ToLower(file->name().substr(startindex, endindex - startindex)));
+  printer.Indent();
+
+  printer.Print(
+      "static bool is_initialized = false;\n"
+      "if (is_initialized) return;\n");
+
+  // Add dependencies
+  for (int i = 0; i < file->dependency_count(); i++) {
+    const std::string& name = file->dependency(i)->name();
+    // Currently, descriptor.proto is not ready for external usage. Skip to
+    // import it for now, so that its dependencies can still work as long as
+    // they don't use protos defined in descriptor.proto.
+    if (name == kDescriptorFile) {
+      continue;
+    }
+    int start = name.find_last_of("/") + 1;
+    int end = name.find_last_of(".");
+    printer.Print(
+        "init_file_^lower^();\n",
+        "lower", ToLower(name.substr(start, end - start)));
+  }
+
+  // Add generated file.
+  printer.Print(
+      "init_generated_pool_once(TSRMLS_C);\n"
+      "const char* generated_file =\n"
+      );
+
+  printer.Indent();
+  printer.Indent();
+
+  // Only write 30 bytes per line.
+  FileDescriptorSet files;
+  FileDescriptorProto* file_proto = files.add_file();
+  file->CopyTo(file_proto);
+  string files_data;
+  files.SerializeToString(&files_data);
+  static const int kBytesPerLine = 30;
+  for (int i = 0; i < files_data.size(); i += kBytesPerLine) {
+    printer.Print(
+        "\"^data^\"^dot^\n",
+        "data", BinaryToHex(files_data.substr(i, kBytesPerLine)),
+        "dot", i + kBytesPerLine < files_data.size() ? "" : ";");
+  }
+
+  printer.Outdent();
+  printer.Outdent();
+
+  printer.Print(
+      "char* binary;\n"
+      "int binary_len;\n"
+      "hex_to_binary(generated_file, &binary, &binary_len);\n"
+      "internal_add_generated_file(binary, binary_len, generated_pool TSRMLS_CC);\n"
+      "FREE(binary);\n"
+      "is_initialized = true;\n"
+      );
+
+  printer.Outdent();
+  printer.Print(
+      "}\n\n");
+
+}
+
+void GenerateExtensionFile(const FileDescriptor* file, bool is_descriptor,
+                  GeneratorContext* generator_context) {
+  GenerateMetadataExtensionFile(file, is_descriptor, generator_context);
+  GenerateMetadataExtensionHeaderFile(file, is_descriptor, generator_context);
+  for (int i = 0; i < file->message_type_count(); i++) {
+    GenerateExtensionMessageFile(file, file->message_type(i), is_descriptor,
+                                 generator_context);
+    GenerateExtensionMessageDeclarationFile(file, file->message_type(i),
+                                            is_descriptor, generator_context);
+  }
+  for (int i = 0; i < file->enum_type_count(); i++) {
+    GenerateExtensionEnumFile(file, file->enum_type(i), generator_context);
+  }
+}
+
 bool Generator::Generate(const FileDescriptor* file, const string& parameter,
                          GeneratorContext* generator_context,
                          string* error) const {
@@ -1364,7 +1863,7 @@ bool Generator::Generate(const FileDescriptor* file, const string& parameter,
     return false;
   }
 
-  GenerateFile(file, is_descriptor, generator_context);
+  GenerateExtensionFile(file, is_descriptor, generator_context);
 
   return true;
 }

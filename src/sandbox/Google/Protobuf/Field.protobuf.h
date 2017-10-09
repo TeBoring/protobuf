@@ -1,0 +1,22 @@
+PHP_METHOD(Field, __construct);
+PHP_METHOD(Field, getKind);
+PHP_METHOD(Field, setKind);
+PHP_METHOD(Field, getCardinality);
+PHP_METHOD(Field, setCardinality);
+PHP_METHOD(Field, getNumber);
+PHP_METHOD(Field, setNumber);
+PHP_METHOD(Field, getName);
+PHP_METHOD(Field, setName);
+PHP_METHOD(Field, getTypeUrl);
+PHP_METHOD(Field, setTypeUrl);
+PHP_METHOD(Field, getOneofIndex);
+PHP_METHOD(Field, setOneofIndex);
+PHP_METHOD(Field, getPacked);
+PHP_METHOD(Field, setPacked);
+PHP_METHOD(Field, getOptions);
+PHP_METHOD(Field, setOptions);
+PHP_METHOD(Field, getJsonName);
+PHP_METHOD(Field, setJsonName);
+PHP_METHOD(Field, getDefaultValue);
+PHP_METHOD(Field, setDefaultValue);
+
