@@ -39,52 +39,52 @@ class EncodeDecodeTest extends TestBase
 #         $this->expectFields($to);
 #     }
 
-    public  function testEncodeDecodeOneof()
-    {
-        $m = new TestMessage();
-        
-        $m->setOneofInt32(1);
-        assert(1 === $m->getOneofInt32());
-        assert(0.0 === $m->getOneofFloat());
-        assert('' === $m->getOneofString());
-        assert(NULL === $m->getOneofMessage());
-        $data = $m->serializeToString();
-        $n = new TestMessage();
-        $n->mergeFromString($data);
-        assert(1 === $n->getOneofInt32());
-
-        $m->setOneofFloat(2.0);
-        assert(0 === $m->getOneofInt32());
-        assert(2.0 === $m->getOneofFloat());
-        assert('' === $m->getOneofString());
-        assert(NULL === $m->getOneofMessage());
-        $data = $m->serializeToString();
-        $n = new TestMessage();
-        $n->mergeFromString($data);
-        assert(2.0 === $n->getOneofFloat());
-        
-        $m->setOneofString('abc');
-        assert(0 === $m->getOneofInt32());
-        assert(0.0 === $m->getOneofFloat());
-        assert('abc' === $m->getOneofString());
-        assert(NULL === $m->getOneofMessage());
-        $data = $m->serializeToString();
-        $n = new TestMessage();
-        $n->mergeFromString($data);
-        assert('abc' === $n->getOneofString());
-        
-        $sub_m = new TestMessage_Sub();
-        $sub_m->setA(1);
-        $m->setOneofMessage($sub_m);
-        assert(0 === $m->getOneofInt32());
-        assert(0.0 === $m->getOneofFloat());
-        assert('' === $m->getOneofString());
-        assert(1 === $m->getOneofMessage()->getA());
-        $data = $m->serializeToString();
-        $n = new TestMessage();
-        $n->mergeFromString($data);
-        assert(1 === $n->getOneofMessage()->getA());
-    }
+#     public  function testEncodeDecodeOneof()
+#     {
+#         $m = new TestMessage();
+#         
+#         $m->setOneofInt32(1);
+#         assert(1 === $m->getOneofInt32());
+#         assert(0.0 === $m->getOneofFloat());
+#         assert('' === $m->getOneofString());
+#         assert(NULL === $m->getOneofMessage());
+#         $data = $m->serializeToString();
+#         $n = new TestMessage();
+#         $n->mergeFromString($data);
+#         assert(1 === $n->getOneofInt32());
+# 
+#         $m->setOneofFloat(2.0);
+#         assert(0 === $m->getOneofInt32());
+#         assert(2.0 === $m->getOneofFloat());
+#         assert('' === $m->getOneofString());
+#         assert(NULL === $m->getOneofMessage());
+#         $data = $m->serializeToString();
+#         $n = new TestMessage();
+#         $n->mergeFromString($data);
+#         assert(2.0 === $n->getOneofFloat());
+#         
+#         $m->setOneofString('abc');
+#         assert(0 === $m->getOneofInt32());
+#         assert(0.0 === $m->getOneofFloat());
+#         assert('abc' === $m->getOneofString());
+#         assert(NULL === $m->getOneofMessage());
+#         $data = $m->serializeToString();
+#         $n = new TestMessage();
+#         $n->mergeFromString($data);
+#         assert('abc' === $n->getOneofString());
+#         
+#         $sub_m = new TestMessage_Sub();
+#         $sub_m->setA(1);
+#         $m->setOneofMessage($sub_m);
+#         assert(0 === $m->getOneofInt32());
+#         assert(0.0 === $m->getOneofFloat());
+#         assert('' === $m->getOneofString());
+#         assert(1 === $m->getOneofMessage()->getA());
+#         $data = $m->serializeToString();
+#         $n = new TestMessage();
+#         $n->mergeFromString($data);
+#         assert(1 === $n->getOneofMessage()->getA());
+#     }
 
     public function testEncodeDecode()
     {
@@ -114,7 +114,7 @@ class EncodeDecodeTest extends TestBase
             $encode_end = microtime_float();
             $encode_time += $encode_end - $encode_start;
     
-            # var_dump(bin2hex($data));
+            var_dump(bin2hex($data));
             $size = strlen($data);
     
             // Decode Message

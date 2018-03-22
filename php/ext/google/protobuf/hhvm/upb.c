@@ -4297,16 +4297,15 @@ static uint8_t upb_msg_fielddefsize(const upb_fielddef *f) {
  * a char* / size_t pair, which is too big for a upb_value.  To fix this
  * we'll probably need to dynamically allocate a upb_msgval and store a
  * pointer to that in the tables for extensions/maps. */
-static upb_value upb_toval(upb_msgval val) {
+/* static upb_value upb_toval(upb_msgval val) {
   upb_value ret;
-  memset(&ret, 0, sizeof(upb_value));  /* XXX */
   ret.val = val;
   return ret;
 }
 
-static upb_msgval upb_msgval_fromval(upb_value val) {
+static upb_msgval upb_msgval_fromval(upb_fieldtype_t type, upb_value val) {
   return val.val;
-}
+} */
 
 static upb_ctype_t upb_fieldtotabtype(upb_fieldtype_t type) {
   switch (type) {
@@ -5174,6 +5173,58 @@ static upb_msgval upb_map_fromkey(upb_fieldtype_t type, const char *key,
   UPB_UNREACHABLE();
 }
 
+static void upb_map_toval(upb_fieldtype_t type, upb_msgval *val,
+                          upb_value *out_val, upb_alloc *a) {
+  switch (type) {
+    case UPB_TYPE_STRING:
+    case UPB_TYPE_BYTES: {
+      upb_stringview *str = upb_malloc(a, sizeof(upb_stringview));
+      *str = val->str;
+      memcpy(&out_val->val, &str, sizeof(str));
+      return;
+    }
+#define CASE(capitaltype, membername) \
+    case UPB_TYPE_ ## capitaltype: \
+      memcpy(&out_val->val, &val->membername, upb_msgval_sizeof(type)); \
+      return;
+
+    CASE(BOOL,    b)
+    CASE(INT32,   i32)
+    CASE(INT64,   i64)
+    CASE(UINT32,  u32)
+    CASE(UINT64,  u64)
+    CASE(DOUBLE,  dbl)
+    CASE(FLOAT,   flt)
+    CASE(ENUM,    i32)
+    CASE(MESSAGE, msg)
+
+#undef CASE
+  }
+  UPB_UNREACHABLE();
+}
+
+static upb_msgval upb_map_fromval(upb_fieldtype_t type, upb_value val) {
+  switch (type) {
+    case UPB_TYPE_BYTES:
+    case UPB_TYPE_STRING: {
+      upb_msgval ret;
+      ret.str = **(upb_stringview**)&val.val;
+      return ret;
+    }
+    case UPB_TYPE_BOOL:
+    case UPB_TYPE_INT32:
+    case UPB_TYPE_UINT32:
+    case UPB_TYPE_INT64:
+    case UPB_TYPE_UINT64:
+    case UPB_TYPE_DOUBLE:
+    case UPB_TYPE_ENUM:
+    case UPB_TYPE_FLOAT:
+    case UPB_TYPE_MESSAGE:
+      return upb_msgval_read(&val.val, 0, upb_msgval_sizeof(type));
+  }
+  UPB_UNREACHABLE();
+}
+
 size_t upb_map_sizeof(upb_fieldtype_t ktype, upb_fieldtype_t vtype) {
   /* Size does not currently depend on key/value type. */
   UPB_UNUSED(ktype);
@@ -5245,7 +5296,7 @@ bool upb_map_get(const upb_map *map, upb_msgval key, upb_msgval *val) {
   upb_map_tokey(map->key_type, &key, &key_str, &key_len);
   ret = upb_strtable_lookup2(&map->strtab, key_str, key_len, &tabval);
   if (ret) {
-    memcpy(val, &tabval, sizeof(tabval));
+    *val = upb_map_fromval(map->val_type, tabval);
   }
 
   return ret;
@@ -5255,16 +5306,18 @@ bool upb_map_set(upb_map *map, upb_msgval key, upb_msgval val,
                  upb_msgval *removed) {
   const char *key_str;
   size_t key_len;
-  upb_value tabval = upb_toval(val);
+  upb_value tabval;
   upb_value removedtabval;
   upb_alloc *a = map->alloc;
 
   upb_map_tokey(map->key_type, &key, &key_str, &key_len);
+  upb_map_toval(map->val_type, &val, &tabval, a);
 
   /* TODO(haberman): add overwrite operation to minimize number of lookups. */
   if (upb_strtable_lookup2(&map->strtab, key_str, key_len, NULL)) {
     upb_strtable_remove3(&map->strtab, key_str, key_len, &removedtabval, a);
-    memcpy(&removed, &removedtabval, sizeof(removed));
+    /* TODO(teboring): free memory of upb_stringview. */
+    *removed = upb_map_fromval(map->val_type, removedtabval);
   }
 
   return upb_strtable_insert3(&map->strtab, key_str, key_len, tabval, a);
@@ -5276,6 +5329,7 @@ bool upb_map_del(upb_map *map, upb_msgval key) {
   upb_alloc *a = map->alloc;
 
   upb_map_tokey(map->key_type, &key, &key_str, &key_len);
+  /* TODO(teboring): free memory of upb_stringview. */
   return upb_strtable_remove3(&map->strtab, key_str, key_len, NULL, a);
 }
 
@@ -5285,6 +5339,7 @@ bool upb_map_del(upb_map *map, upb_msgval key) {
 struct upb_mapiter {
   upb_strtable_iter iter;
   upb_fieldtype_t key_type;
+  upb_fieldtype_t val_type;
 };
 
 size_t upb_mapiter_sizeof() {
@@ -5294,6 +5349,7 @@ size_t upb_mapiter_sizeof() {
 void upb_mapiter_begin(upb_mapiter *i, const upb_map *map) {
   upb_strtable_begin(&i->iter, &map->strtab);
   i->key_type = map->key_type;
+  i->val_type = map->val_type;
 }
 
 upb_mapiter *upb_mapiter_new(const upb_map *t, upb_alloc *a) {
@@ -5325,7 +5381,7 @@ upb_msgval upb_mapiter_key(const upb_mapiter *i) {
 }
 
 upb_msgval upb_mapiter_value(const upb_mapiter *i) {
-  return upb_msgval_fromval(upb_strtable_iter_value(&i->iter));
+  return upb_map_fromval(i->val_type, upb_strtable_iter_value(&i->iter));
 }
 
 void upb_mapiter_setdone(upb_mapiter *i) {
