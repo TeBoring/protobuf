@@ -2,6 +2,28 @@
 
 VERSION=$1
 
+# Generate code for proto
+../../src/protoc --php_out=generated         \
+  proto/test.proto                           \
+  proto/test_include.proto                   \
+  proto/test_no_namespace.proto              \
+  proto/test_prefix.proto                    \
+  proto/test_php_namespace.proto             \
+  proto/test_empty_php_namespace.proto       \
+  proto/test_reserved_enum_lower.proto       \
+  proto/test_reserved_enum_upper.proto       \
+  proto/test_reserved_enum_value_lower.proto \
+  proto/test_reserved_enum_value_upper.proto \
+  proto/test_reserved_message_lower.proto    \
+  proto/test_reserved_message_upper.proto    \
+  proto/test_service.proto                   \
+  proto/test_service_namespace.proto         \
+  proto/test_descriptors.proto
+pushd ../../src
+./protoc --php_out=../php/tests/generated -I../php/tests -I. \
+  ../php/tests/proto/test_import_descriptor_proto.proto
+popd
+
 export PATH=/usr/local/php-$VERSION/bin:$PATH
 export C_INCLUDE_PATH=/usr/local/php-$VERSION/include/php/main:/usr/local/php-$VERSION/include/php:$C_INCLUDE_PATH
 export CPLUS_INCLUDE_PATH=/usr/local/php-$VERSION/include/php/main:/usr/local/php-$VERSION/include/php:$CPLUS_INCLUDE_PATH
@@ -21,7 +43,7 @@ do
   echo "****************************"
   echo "* $t"
   echo "****************************"
-  # php -dextension=../ext/google/protobuf/modules/protobuf.so `which phpunit` --bootstrap autoload.php $t
+  php -dextension=../ext/google/protobuf/modules/protobuf.so `which phpunit` --bootstrap autoload.php $t
   echo ""
 done
 
