@@ -34,6 +34,7 @@ use Google\Protobuf\Value;
 use Google\Protobuf\ListValue;
 use Google\Protobuf\Struct;
 use Google\Protobuf\GPBEmpty;
+use Foo\PRoom;
 
 class EncodeDecodeTest extends TestBase
 {
@@ -42,6 +43,21 @@ class EncodeDecodeTest extends TestBase
         $m = new TestMessage();
         $m->mergeFromJsonString("{\"optionalInt32\":1}");
         $this->assertEquals(1, $m->getOptionalInt32());
+    }
+
+    public function testDecodeJsonTrueOptional()
+    {
+        $room = [
+            'roomid'=>1,
+            'uid'=>1000,
+            'title'=>'101',
+            'styleid'=>1,
+            'level'=>1
+        ];
+        $protoRoom = new PRoom($room);
+        var_dump('!!!!!!!!!!!!');
+        var_dump($protoRoom->serializeToJsonString());
+        var_dump('!!!!!!!!!!!!');
     }
 
     public function testDecodeTopLevelBoolValue()
