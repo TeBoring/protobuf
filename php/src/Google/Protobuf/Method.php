@@ -20,31 +20,31 @@ class Method extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * A URL of the input message type.
      *
      * Generated from protobuf field <code>string request_type_url = 2;</code>
      */
-    private $request_type_url = '';
+    protected $request_type_url = '';
     /**
      * If true, the request is streamed.
      *
      * Generated from protobuf field <code>bool request_streaming = 3;</code>
      */
-    private $request_streaming = false;
+    protected $request_streaming = false;
     /**
      * The URL of the output message type.
      *
      * Generated from protobuf field <code>string response_type_url = 4;</code>
      */
-    private $response_type_url = '';
+    protected $response_type_url = '';
     /**
      * If true, the response is streamed.
      *
      * Generated from protobuf field <code>bool response_streaming = 5;</code>
      */
-    private $response_streaming = false;
+    protected $response_streaming = false;
     /**
      * Any metadata attached to the method.
      *
@@ -56,7 +56,7 @@ class Method extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Syntax syntax = 7;</code>
      */
-    private $syntax = 0;
+    protected $syntax = 0;
 
     /**
      * Constructor.
@@ -105,7 +105,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -131,7 +130,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setRequestTypeUrl($var)
     {
-        GPBUtil::checkString($var, True);
         $this->request_type_url = $var;
 
         return $this;
@@ -157,7 +155,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setRequestStreaming($var)
     {
-        GPBUtil::checkBool($var);
         $this->request_streaming = $var;
 
         return $this;
@@ -183,7 +180,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setResponseTypeUrl($var)
     {
-        GPBUtil::checkString($var, True);
         $this->response_type_url = $var;
 
         return $this;
@@ -209,7 +205,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setResponseStreaming($var)
     {
-        GPBUtil::checkBool($var);
         $this->response_streaming = $var;
 
         return $this;
@@ -261,7 +256,6 @@ class Method extends \Google\Protobuf\Internal\Message
      */
     public function setSyntax($var)
     {
-        GPBUtil::checkEnum($var, \Google\Protobuf\Syntax::class);
         $this->syntax = $var;
 
         return $this;

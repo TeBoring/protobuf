@@ -20,7 +20,7 @@ class Enum extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Enum value definitions.
      *
@@ -38,13 +38,13 @@ class Enum extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 4;</code>
      */
-    private $source_context = null;
+    protected $source_context = null;
     /**
      * The source syntax.
      *
      * Generated from protobuf field <code>.google.protobuf.Syntax syntax = 5;</code>
      */
-    private $syntax = 0;
+    protected $syntax = 0;
 
     /**
      * Constructor.
@@ -89,7 +89,6 @@ class Enum extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -155,7 +154,17 @@ class Enum extends \Google\Protobuf\Internal\Message
      */
     public function getSourceContext()
     {
-        return $this->source_context;
+        return isset($this->source_context) ? $this->source_context : null;
+    }
+
+    public function hasSourceContext()
+    {
+        return isset($this->source_context);
+    }
+
+    public function clearSourceContext()
+    {
+        unset($this->source_context);
     }
 
     /**
@@ -193,7 +202,6 @@ class Enum extends \Google\Protobuf\Internal\Message
      */
     public function setSyntax($var)
     {
-        GPBUtil::checkEnum($var, \Google\Protobuf\Syntax::class);
         $this->syntax = $var;
 
         return $this;

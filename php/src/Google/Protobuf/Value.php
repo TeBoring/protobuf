@@ -71,7 +71,6 @@ class Value extends \Google\Protobuf\Internal\Message
      */
     public function setNullValue($var)
     {
-        GPBUtil::checkEnum($var, \Google\Protobuf\NullValue::class);
         $this->writeOneof(1, $var);
 
         return $this;
@@ -102,7 +101,6 @@ class Value extends \Google\Protobuf\Internal\Message
      */
     public function setNumberValue($var)
     {
-        GPBUtil::checkDouble($var);
         $this->writeOneof(2, $var);
 
         return $this;
@@ -133,7 +131,6 @@ class Value extends \Google\Protobuf\Internal\Message
      */
     public function setStringValue($var)
     {
-        GPBUtil::checkString($var, True);
         $this->writeOneof(3, $var);
 
         return $this;
@@ -164,7 +161,6 @@ class Value extends \Google\Protobuf\Internal\Message
      */
     public function setBoolValue($var)
     {
-        GPBUtil::checkBool($var);
         $this->writeOneof(4, $var);
 
         return $this;

@@ -28,7 +28,7 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * The methods of this interface, in unspecified order.
      *
@@ -62,14 +62,14 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string version = 4;</code>
      */
-    private $version = '';
+    protected $version = '';
     /**
      * Source context for the protocol buffer service represented by this
      * message.
      *
      * Generated from protobuf field <code>.google.protobuf.SourceContext source_context = 5;</code>
      */
-    private $source_context = null;
+    protected $source_context = null;
     /**
      * Included interfaces. See [Mixin][].
      *
@@ -81,7 +81,7 @@ class Api extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Syntax syntax = 7;</code>
      */
-    private $syntax = 0;
+    protected $syntax = 0;
 
     /**
      * Constructor.
@@ -150,7 +150,6 @@ class Api extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -260,7 +259,6 @@ class Api extends \Google\Protobuf\Internal\Message
      */
     public function setVersion($var)
     {
-        GPBUtil::checkString($var, True);
         $this->version = $var;
 
         return $this;
@@ -275,7 +273,17 @@ class Api extends \Google\Protobuf\Internal\Message
      */
     public function getSourceContext()
     {
-        return $this->source_context;
+        return isset($this->source_context) ? $this->source_context : null;
+    }
+
+    public function hasSourceContext()
+    {
+        return isset($this->source_context);
+    }
+
+    public function clearSourceContext()
+    {
+        unset($this->source_context);
     }
 
     /**
@@ -340,7 +348,6 @@ class Api extends \Google\Protobuf\Internal\Message
      */
     public function setSyntax($var)
     {
-        GPBUtil::checkEnum($var, \Google\Protobuf\Syntax::class);
         $this->syntax = $var;
 
         return $this;

@@ -20,13 +20,13 @@ class EnumValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Enum value number.
      *
      * Generated from protobuf field <code>int32 number = 2;</code>
      */
-    private $number = 0;
+    protected $number = 0;
     /**
      * Protocol buffer options.
      *
@@ -73,7 +73,6 @@ class EnumValue extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -99,7 +98,6 @@ class EnumValue extends \Google\Protobuf\Internal\Message
      */
     public function setNumber($var)
     {
-        GPBUtil::checkInt32($var);
         $this->number = $var;
 
         return $this;

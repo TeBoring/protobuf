@@ -21,7 +21,7 @@ class BytesValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bytes value = 1;</code>
      */
-    private $value = '';
+    protected $value = '';
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ class BytesValue extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkString($var, False);
         $this->value = $var;
 
         return $this;

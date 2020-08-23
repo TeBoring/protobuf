@@ -5,7 +5,6 @@
 namespace Google\Protobuf;
 
 use Google\Protobuf\Internal\GPBType;
-use Google\Protobuf\Internal\Message;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
@@ -39,10 +38,13 @@ use Google\Protobuf\Internal\GPBUtil;
  *       ...
  *  Example 4: Pack and unpack a message in Go
  *      foo := &pb.Foo{...}
- *      any, err := ptypes.MarshalAny(foo)
+ *      any, err := anypb.New(foo)
+ *      if err != nil {
+ *        ...
+ *      }
  *      ...
  *      foo := &pb.Foo{}
- *      if err := ptypes.UnmarshalAny(any, foo); err != nil {
+ *      if err := any.UnmarshalTo(foo); err != nil {
  *        ...
  *      }
  * The pack methods provided by protobuf library will by default use
@@ -80,7 +82,8 @@ class Any extends \Google\Protobuf\Internal\Message
 {
     /**
      * A URL/resource name that uniquely identifies the type of the serialized
-     * protocol buffer message. The last segment of the URL's path must represent
+     * protocol buffer message. This string must contain at least
+     * one "/" character. The last segment of the URL's path must represent
      * the fully qualified name of the type (as in
      * `path/google.protobuf.Duration`). The name should be in a canonical form
      * (e.g., leading "." is not accepted).
@@ -104,15 +107,13 @@ class Any extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string type_url = 1;</code>
      */
-    private $type_url = '';
+    protected $type_url = '';
     /**
      * Must be a valid serialized protocol buffer of the above specified type.
      *
      * Generated from protobuf field <code>bytes value = 2;</code>
      */
-    private $value = '';
-
-    const TYPE_URL_PREFIX = 'type.googleapis.com/';
+    protected $value = '';
 
     /**
      * Constructor.
@@ -122,7 +123,8 @@ class Any extends \Google\Protobuf\Internal\Message
      *
      *     @type string $type_url
      *           A URL/resource name that uniquely identifies the type of the serialized
-     *           protocol buffer message. The last segment of the URL's path must represent
+     *           protocol buffer message. This string must contain at least
+     *           one "/" character. The last segment of the URL's path must represent
      *           the fully qualified name of the type (as in
      *           `path/google.protobuf.Duration`). The name should be in a canonical form
      *           (e.g., leading "." is not accepted).
@@ -154,7 +156,8 @@ class Any extends \Google\Protobuf\Internal\Message
 
     /**
      * A URL/resource name that uniquely identifies the type of the serialized
-     * protocol buffer message. The last segment of the URL's path must represent
+     * protocol buffer message. This string must contain at least
+     * one "/" character. The last segment of the URL's path must represent
      * the fully qualified name of the type (as in
      * `path/google.protobuf.Duration`). The name should be in a canonical form
      * (e.g., leading "." is not accepted).
@@ -186,7 +189,8 @@ class Any extends \Google\Protobuf\Internal\Message
 
     /**
      * A URL/resource name that uniquely identifies the type of the serialized
-     * protocol buffer message. The last segment of the URL's path must represent
+     * protocol buffer message. This string must contain at least
+     * one "/" character. The last segment of the URL's path must represent
      * the fully qualified name of the type (as in
      * `path/google.protobuf.Duration`). The name should be in a canonical form
      * (e.g., leading "." is not accepted).
@@ -214,7 +218,6 @@ class Any extends \Google\Protobuf\Internal\Message
      */
     public function setTypeUrl($var)
     {
-        GPBUtil::checkString($var, True);
         $this->type_url = $var;
 
         return $this;
@@ -240,7 +243,6 @@ class Any extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkString($var, False);
         $this->value = $var;
 
         return $this;
@@ -290,12 +292,6 @@ class Any extends \Google\Protobuf\Internal\Message
      */
     public function pack($msg)
     {
-        if (!$msg instanceof Message) {
-            trigger_error("Given parameter is not a message instance.",
-                          E_USER_ERROR);
-            return;
-        }
-
         // Set value using serialized message.
         $this->value = $msg->serializeToString();
 

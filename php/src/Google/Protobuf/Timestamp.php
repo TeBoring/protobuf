@@ -9,17 +9,17 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * A Timestamp represents a point in time independent of any time zone
- * or calendar, represented as seconds and fractions of seconds at
- * nanosecond resolution in UTC Epoch time. It is encoded using the
- * Proleptic Gregorian Calendar which extends the Gregorian calendar
- * backwards to year one. It is encoded assuming all minutes are 60
- * seconds long, i.e. leap seconds are "smeared" so that no leap second
- * table is needed for interpretation. Range is from
- * 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z.
- * By restricting to that range, we ensure that we can convert to
- * and from  RFC 3339 date strings.
- * See [https://www.ietf.org/rfc/rfc3339.txt](https://www.ietf.org/rfc/rfc3339.txt).
+ * A Timestamp represents a point in time independent of any time zone or local
+ * calendar, encoded as a count of seconds and fractions of seconds at
+ * nanosecond resolution. The count is relative to an epoch at UTC midnight on
+ * January 1, 1970, in the proleptic Gregorian calendar which extends the
+ * Gregorian calendar backwards to year one.
+ * All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+ * second table is needed for interpretation, using a [24-hour linear
+ * smear](https://developers.google.com/time/smear).
+ * The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+ * restricting to that range, we ensure that we can convert to and from [RFC
+ * 3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
  * # Examples
  * Example 1: Compute Timestamp from POSIX `time()`.
  *     Timestamp timestamp;
@@ -44,7 +44,12 @@ use Google\Protobuf\Internal\GPBUtil;
  *     long millis = System.currentTimeMillis();
  *     Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
  *         .setNanos((int) ((millis % 1000) * 1000000)).build();
- * Example 5: Compute Timestamp from current time in Python.
+ * Example 5: Compute Timestamp from Java `Instant.now()`.
+ *     Instant now = Instant.now();
+ *     Timestamp timestamp =
+ *         Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+ *             .setNanos(now.getNano()).build();
+ * Example 6: Compute Timestamp from current time in Python.
  *     timestamp = Timestamp()
  *     timestamp.GetCurrentTime()
  * # JSON Mapping
@@ -61,12 +66,14 @@ use Google\Protobuf\Internal\GPBUtil;
  * For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
  * 01:30 UTC on January 15, 2017.
  * In JavaScript, one can convert a Date object to this format using the
- * standard [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString]
+ * standard
+ * [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
  * method. In Python, a standard `datetime.datetime` object can be converted
- * to this format using [`strftime`](https://docs.python.org/2/library/time.html#time.strftime)
- * with the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one
- * can use the Joda Time's [`ISODateTimeFormat.dateTime()`](
- * http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime--
+ * to this format using
+ * [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+ * the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+ * the Joda Time's [`ISODateTimeFormat.dateTime()`](
+ * http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime%2D%2D
  * ) to obtain a formatter capable of generating timestamps in this format.
  *
  * Generated from protobuf message <code>google.protobuf.Timestamp</code>
@@ -80,7 +87,7 @@ class Timestamp extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int64 seconds = 1;</code>
      */
-    private $seconds = 0;
+    protected $seconds = 0;
     /**
      * Non-negative fractions of a second at nanosecond resolution. Negative
      * second values with fractions must still have non-negative nanos values
@@ -89,7 +96,7 @@ class Timestamp extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 nanos = 2;</code>
      */
-    private $nanos = 0;
+    protected $nanos = 0;
 
     /**
      * Constructor.
@@ -137,7 +144,6 @@ class Timestamp extends \Google\Protobuf\Internal\Message
      */
     public function setSeconds($var)
     {
-        GPBUtil::checkInt64($var);
         $this->seconds = $var;
 
         return $this;
@@ -169,7 +175,6 @@ class Timestamp extends \Google\Protobuf\Internal\Message
      */
     public function setNanos($var)
     {
-        GPBUtil::checkInt32($var);
         $this->nanos = $var;
 
         return $this;

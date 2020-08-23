@@ -21,7 +21,7 @@ class UInt32Value extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>uint32 value = 1;</code>
      */
-    private $value = 0;
+    protected $value = 0;
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ class UInt32Value extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkUint32($var);
         $this->value = $var;
 
         return $this;

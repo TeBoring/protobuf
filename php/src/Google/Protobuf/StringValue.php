@@ -21,7 +21,7 @@ class StringValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string value = 1;</code>
      */
-    private $value = '';
+    protected $value = '';
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ class StringValue extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkString($var, True);
         $this->value = $var;
 
         return $this;

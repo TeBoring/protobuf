@@ -21,7 +21,7 @@ class FloatValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>float value = 1;</code>
      */
-    private $value = 0.0;
+    protected $value = 0.0;
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ class FloatValue extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkFloat($var);
         $this->value = $var;
 
         return $this;

@@ -663,7 +663,7 @@ build_php7.4() {
 }
 
 build_php7.4_c() {
-  IS_64BIT=$1
+  IS_64BIT="true"
   use_php 7.4
   php/tests/test.sh
   pushd conformance

@@ -81,14 +81,14 @@ class Mixin extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * If non-empty specifies a path under which inherited HTTP paths
      * are rooted.
      *
      * Generated from protobuf field <code>string root = 2;</code>
      */
-    private $root = '';
+    protected $root = '';
 
     /**
      * Constructor.
@@ -128,7 +128,6 @@ class Mixin extends \Google\Protobuf\Internal\Message
      */
     public function setName($var)
     {
-        GPBUtil::checkString($var, True);
         $this->name = $var;
 
         return $this;
@@ -156,7 +155,6 @@ class Mixin extends \Google\Protobuf\Internal\Message
      */
     public function setRoot($var)
     {
-        GPBUtil::checkString($var, True);
         $this->root = $var;
 
         return $this;

@@ -21,7 +21,7 @@ class Int64Value extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int64 value = 1;</code>
      */
-    private $value = 0;
+    protected $value = 0;
 
     /**
      * Constructor.
@@ -58,7 +58,6 @@ class Int64Value extends \Google\Protobuf\Internal\Message
      */
     public function setValue($var)
     {
-        GPBUtil::checkInt64($var);
         $this->value = $var;
 
         return $this;
